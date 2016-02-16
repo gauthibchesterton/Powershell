@@ -17,12 +17,12 @@
 
 .NOTES
   Version:        1.0
-  Author:         <Name>
-  Creation Date:  <Date>
-  Purpose/Change: Initial script development
+  Author:         Brian Gauthier
+  Creation Date:  2/12/2016
+  Purpose/Change: Scan a directory for Showcase Queries, then extract specific XML data into a CSV
 
 .EXAMPLE
-  <Example goes here. Repeat this attribute for more than one example>
+	Get-Files -Path "\\asitapps\apps\!Brian GauthierDOCS\Showcase\ShowcaseResults\testFiles"
 
   <Example explanation goes here>
 #>
@@ -30,7 +30,9 @@
 #---------------------------------------------------------[Initialisations]--------------------------------------------------------
 
 #Set Error Action to Silently Continue
-$ErrorActionPreference = 'SilentlyContinue'
+$ErrorActionPreference = 'Stop'
+
+]
 
 #Import PSLogging Module
 Import-Module PSLogging
@@ -44,6 +46,9 @@ $sScriptVersion = '1.0'
 $sLogPath = 'C:\Windows\Temp\Showcase'
 $sLogName = 'ShowcaseXML.log'
 $sLogFile = Join-Path -Path $sLogPath -ChildPath $sLogName
+
+[XML]$XML = Get-Content -Path Data.xml
+$pData    = $XML.Paths.Path | Where-Object {$_.name -eq 'TEST'} | Select directory
 
 #Temp List
 $sTempList = @()
@@ -66,6 +71,13 @@ Function Get-Files {
 		$sTempList += Get-ChildItem -Path $Path -Recurse | Select FullName | % {
             Write-LogInfo -LogPath $sLogFile -Message $_
         }    
+
+        #When Verbose, this will print out the 
+	    #A list of paths for files found.
+	    foreach($r in $sTempList) {
+		    Write-Host $r.FullName
+	    }
+
     }
     Catch {
       Write-LogError -LogPath $sLogFile -Message $_.Exception -ExitGracefully
@@ -74,11 +86,6 @@ Function Get-Files {
   }
 
   End {
-	#When Verbose, this will print out the 
-	#A list of paths for files found.
-	foreach($r in $sTempList) {
-		Write-Host $r.FullName
-	}
 
     If ($?) {
       Write-LogInfo -LogPath $sLogFile -Message 'Completed Successfully.'
@@ -93,6 +100,7 @@ Function Get-Files {
 Start-Log -LogPath $sLogPath -LogName $sLogName -ScriptVersion $sScriptVersion
 
 #Script Execution goes here
-Get-Files -Path "\\asitapps\apps\!Brian GauthierDOCS\Showcase\ShowcaseResults\testFiles"
+
+Get-Files -Path ($p.directory)
 
 Stop-Log -LogPath $sLogFile
