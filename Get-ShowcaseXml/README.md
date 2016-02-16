@@ -6,7 +6,7 @@ This script will parse a directory for Showcase queries, and then extract
 
 ## Modules Needed
 
-* PSLogging(https://github.com/9to5IT/PSLogging)
+* [PSLogging](https://github.com/9to5IT/PSLogging)
 
 
 ## Documentation
